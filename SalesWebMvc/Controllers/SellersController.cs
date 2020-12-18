@@ -48,7 +48,7 @@ namespace SalesWebMvc.Controllers
                 return NotFound();
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = _sellerService.FindById(id.Value); // Para ver se existe no banco de dados
             if(obj == null)
             {
                 return NotFound();
@@ -73,13 +73,43 @@ namespace SalesWebMvc.Controllers
                 return NotFound();
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = _sellerService.FindById(id.Value);// Para ver se existe no banco de dados
             if (obj == null)
             {
                 return NotFound();
             }
 
             return View(obj);
+        }
+
+        public IActionResult Edit(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+            if(obj == null)
+            {
+                return NotFound();
+            }
+
+            List<Department> departments = _departmentService.FindAll();
+            SellerFormViewMmodel viewModel = new SellerFormViewMmodel { Departments = departments, Seller = obj };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Seller seller)
+        {
+            if(id != seller.Id)
+            {
+                return BadRequest();
+            }
+            _sellerService.Edit(seller);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
