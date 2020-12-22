@@ -53,13 +53,13 @@ namespace SalesWebMvc.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value); // Para ver se existe no banco de dados
-            if(obj == null)
+            if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
@@ -71,16 +71,23 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            
-            await _sellerService.RemoveAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+
+                await _sellerService.RemoveAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (IntregridyException e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
         }
 
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return RedirectToAction(nameof(Error), new {message =  "Id not provided"});
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);// Para ver se existe no banco de dados
@@ -94,13 +101,13 @@ namespace SalesWebMvc.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);
-            if(obj == null)
+            if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
@@ -116,7 +123,7 @@ namespace SalesWebMvc.Controllers
         {
             try
             {
-               
+
 
                 if (!ModelState.IsValid)
                 {
@@ -127,7 +134,7 @@ namespace SalesWebMvc.Controllers
 
                 if (id != seller.Id)
                 {
-                return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
+                    return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
                 }
                 await _sellerService.EditAsync(seller);
                 return RedirectToAction(nameof(Index));
@@ -151,7 +158,7 @@ namespace SalesWebMvc.Controllers
 
             };
             return View(viewModel);
-            
+
         }
     }
 }

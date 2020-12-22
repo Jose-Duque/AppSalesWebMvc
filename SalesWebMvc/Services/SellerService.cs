@@ -28,7 +28,7 @@ namespace SalesWebMvc.Services
             _context.Add(seller);
             await _context.SaveChangesAsync();// Para salvar no Banco de Dados
         }
-        
+
         public async Task<Seller> FindByIdAsync(int id)
         {
             return await _context.Seller.Include(obj => obj.Department).FirstOrDefaultAsync(obj => obj.Id == id);
@@ -36,14 +36,22 @@ namespace SalesWebMvc.Services
 
         public async Task RemoveAsync(int id)
         {
-            var selle = await _context.Seller.FirstOrDefaultAsync(obj => obj.Id == id);
-            _context.Remove(selle);
-            await _context.SaveChangesAsync();
+            try
+            {
+
+                var selle = await _context.Seller.FirstOrDefaultAsync(obj => obj.Id == id);
+                _context.Remove(selle);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                throw new IntregridyException(e.Message);
+            }
         }
 
         public async Task EditAsync(Seller seller)
         {
-            if(!await _context.Seller.AnyAsync(obj => obj.Id == seller.Id))
+            if (!await _context.Seller.AnyAsync(obj => obj.Id == seller.Id))
             {
                 throw new NotFoundException("Id not found");
             }
@@ -51,7 +59,7 @@ namespace SalesWebMvc.Services
             {
 
                 _context.Update(seller);
-               await  _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException e)
             {
