@@ -45,7 +45,7 @@ namespace SalesWebMvc.Services
             }
             catch (DbUpdateException e)
             {
-                throw new IntregridyException(e.Message);
+                throw new IntregridyException(e.Message);        
             }
         }
 
